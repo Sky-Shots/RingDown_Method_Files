@@ -1,0 +1,47 @@
+[RD0] mode = NEW FILE MODE (new metadata)
+[RD1/NEW] fs=125000000.0 | start_rel=125056 bytes | size=750080 bytes
+[RD1/NEW] slicing samples [62528:437568] | total=375040
+[RD1/NEW] relax = 312512 samples (~2.50 ms)
+[MAIN] RD0–RD1 complete
+[RD2-A] dc_offset = -1.649e+01
+[RD2-B] peak amplitude = 3.278e+04 | normalized = True
+[RD2-C] saved rd_relax_zoom.png
+[DRIVER] RD2 done
+[RD3-A] env_abs computed | length=312512
+[RD3-B] envelope smoothed | M=12 samples
+[RD3-C] saved rd_envelope.png
+[DRIVER] RD3 done
+[RD4-A] fit window: i0=75 i1=312512 | t0=0.001 ms → t1=2.500 ms
+[RD4-B] τ = 410670.96 µs | Q_env = 6444353.5
+WARNING (RD4): RMSE indicates a poor exponential fit.
+FIX: check RD3 envelope smoothing or verify f0 used here.
+[RD4-C] rmse=8.469e-02 | saved rd_envelope_fit.png
+[DRIVER] RD4 done | tau=410670.96 µs | Q_env=6444353.5
+[RD5-A] crossings found: 154526
+[RD5-B] first 3 crossings (s): [4.49863644e-10 1.74977798e-08 3.14716028e-08]
+WARNING (RD5): Zero-crossing intervals vary a lot.
+FIX: Check RD2 plot for noise or clipping. Verify f0 guess in RD3/RD4.
+[RD5-C] f0_relax = 30.903978 MHz | cycles used = 154526
+[DRIVER] RD5 done | f0_relax=30.903978 MHz
+[RD7] alpha = 2.435
+[RD7] Δf_tau = 0.388 Hz   (from tau)
+[RD7] Δf_Q   = 0.775 Hz   (from Q)
+WARNING (RD7): Δf_tau and Δf_Q differ by more than 30%.
+FIX: Check Q from RD4 and f0 from RD5; noise or wrong envelope region.
+[RD7] saved rd_linewidth_compare.png
+[DRIVER] RD7 done | alpha=2.435
+WARNING (RD6): High RMSE indicates a poor exponential fit.
+FIX: Inspect rd_envelope_fit.png and adjust smoothing/fitting window.
+[RD6] f0          = 30.903978 MHz
+[RD6] tau         = 410670.96 µs
+--------------------------------------------------------------
+[RD6] All values logged successfully.
+=== RD Summary (rd_results.csv) ===
+tau_s:  n=1 | min=0.410671  mean=0.410671  max=0.410671
+Q:  n=1 | min=3.98711e+07  mean=3.98711e+07  max=3.98711e+07
+rmse:  n=1 | min=0.0846869  mean=0.0846869  max=0.0846869
+
+hz=125000000.0
+PS C:\Users\renrum\Desktop\PitayaQCM\RingDown\RingDown_Method_Files-main> cd ..
+root@rp-f0c2d4.local's password:
+ringdown_data.raw                        
