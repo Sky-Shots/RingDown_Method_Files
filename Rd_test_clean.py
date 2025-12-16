@@ -73,7 +73,7 @@ AXIL_BASE = 0x40000000
 AXIL_SIZE = 0x1000
 
 RAM_BASE  = 0x01000000
-RAM_SIZE  = 220 * 1024 * 1024      # 220 MB
+RAM_SIZE  = 4 * 1024 * 1024      # 220 MB
 SAMPLE_SIZE = 2                    # int16 = 2 bytes
 BURST_BYTES = 128                  # DMA burst size in bytes
 
@@ -189,49 +189,57 @@ print("Generating excitation waveform...")
 # Number of samples for the stored excite buffer
 N = int(DURATION_S * SAMPLE_RATE)
 
-# Time vector for generating the sine
-t = np.arange(N) / SAMPLE_RATE
-
-# The sine equation: A * sin(2π f t)
-# This excites the crystal near its mechanical resonance.
-x = AM_PK_V * np.sin(2 * np.pi * FREQ_HZ * t)
-
-# ---------------------------------------------------------
-# Convert from Volts → DAC integer codes
-# ---------------------------------------------------------
-
 # Maximum DAC code for given number of bits:
 dac_max = (2**(DAC_BITS - 1) - 1)
 
-# Normalize waveform into full DAC range
-x_norm = x / FULL_SCALE_V
-x_dac  = np.clip(x_norm * dac_max, -dac_max, dac_max).astype(np.int16)
+chunk_samples = 65536
+written_samples = 0
+
+for start in range(0, N, chunk_samples):
+    count = min(chunk_samples, N - written_samples)
+
+    # Time vector for generating the sine
+    t = ( start + np.arange(N) / SAMPLE_RATE)
+    # The sine equation: A * sin(2π f t)
+    # This excites the crystal near its mechanical resonance
+    chunk = np.sin(2 * np.pi * FREQ_HZ * t)
+
+    # scale directly to DAC codes
+    chunk = (chunk * AM_PK_V / FULL_SCALE_V * dac_max). astype(np.int16)
+
+    ram_mmio.write(start * SAMPLE_SIZE, chunk.tobytes())
+
+    written_samples += count
+
+del t
+del chunk
+print(f"Excitation waveform generated: {written_samples}samples")
+
+
 
 # ---------------------------------------------------------
 # Pad to 64-sample boundary for DMA alignment
 # ---------------------------------------------------------
+waveform_samples = written_samples
+waveform_bytes = waveform_samples * SAMPLE_SIZE
 
-pad = (-len(x_dac)) % 64
+pad = (- waveform_bytes) % 64
 if pad > 0:
-    x_dac = np.pad(x_dac, (0, pad), mode="constant")
-    print(f"Waveform padded by {pad} samples → new length = {len(x_dac)}")
+    waveform_bytes += pad
+    print(f"Waveform padded by {pad} bytesf or 64-sample alignment.")
 
-waveform = x_dac
-waveform_bytes = len(waveform) * SAMPLE_SIZE
 
-print(f"Generated sine waveform with {len(waveform)} samples ({waveform_bytes} bytes).")
+
 
 # ---------------------------------------------------------
 # STEP 7 — Compute RAM layout and write waveform to DDR
 # ---------------------------------------------------------
 
 print("Computing RAM layout...")
-
-# Waveform byte size
-waveform_bytes = len(waveform) * SAMPLE_SIZE
 waveform_bursts = waveform_bytes // BURST_BYTES
 
-print(f"Waveform occupies {waveform_bytes} bytes ({waveform_bursts} bursts).")
+
+print(f"Waveform occupied{waveform_bytes} bytes ({waveform_bursts} bursts).")
 
 # ---------------------------------------------------------
 # Determine where ADC capture (ring-down) will be stored
@@ -269,7 +277,14 @@ print(f"Capture size (bytes)       : {true_writer_bytes}")
 # ---------------------------------------------------------
 
 print("Writing excitation waveform to DDR...")
-ram_mmio.write(0, waveform.tobytes())
+
+wave_bytes = waveform.tobytes()
+
+chunk_size = 1024 * 1024    # 1 MB chunks
+for i in range(0,len(wave_bytes), chunk_size):
+    ram_mmio.write(i, wave_bytes()[i:i+chunk_size])
+del wave_bytes
+del waveform
 print("Waveform written.")
 
 # ---------------------------------------------------------
