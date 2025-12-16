@@ -1,0 +1,123 @@
+
+Data of the old file - data.raw
+[RD0] mode = NEW FILE MODE (new metadata)
+[RD1/NEW] fs=125000000.0 | start_rel=125056 bytes | size=750080 bytes
+[RD1/NEW] slicing samples [62528:437568] | total=375040
+[RD1/NEW] relax = 312512 samples (~2.50 ms)
+[MAIN] RD0–RD1 complete
+[RD2-A] dc_offset = -1.649e+01
+[RD2-B] peak amplitude = 3.278e+04 | normalized = True
+[RD2-C] saved rd_relax_zoom.png
+[DRIVER] RD2 done
+[RD3-A] env_abs computed | length=312512
+[RD3-B] envelope smoothed | M=12 samples
+[RD3-C] saved rd_envelope.png
+[DRIVER] RD3 done
+[RD4-A] fit window: i0=75 i1=312512 | t0=0.001 ms → t1=2.500 ms
+[RD4-B] τ = 410670.96 µs | Q_env = 6444353.5
+WARNING (RD4): RMSE indicates a poor exponential fit.
+FIX: check RD3 envelope smoothing or verify f0 used here.
+[RD4-C] rmse=8.469e-02 | saved rd_envelope_fit.png
+[DRIVER] RD4 done | tau=410670.96 µs | Q_env=6444353.5
+[RD5-A] crossings found: 154526
+[RD5-B] first 3 crossings (s): [4.49863644e-10 1.74977798e-08 3.14716028e-08]
+WARNING (RD5): Zero-crossing intervals vary a lot.
+FIX: Check RD2 plot for noise or clipping. Verify f0 guess in RD3/RD4.
+[RD5-C] f0_relax = 30.903978 MHz | cycles used = 154526
+[DRIVER] RD5 done | f0_relax=30.903978 MHz
+[RD7] alpha = 2.435
+[RD7] Δf_tau = 0.388 Hz   (from tau)
+[RD7] Δf_Q   = 0.775 Hz   (from Q)
+WARNING (RD7): Δf_tau and Δf_Q differ by more than 30%.
+FIX: Check Q from RD4 and f0 from RD5; noise or wrong envelope region.
+[RD7] saved rd_linewidth_compare.png
+[DRIVER] RD7 done | alpha=2.435
+WARNING (RD6): High RMSE indicates a poor exponential fit.
+FIX: Inspect rd_envelope_fit.png and adjust smoothing/fitting window.
+[RD6] f0          = 30.903978 MHz
+[RD6] tau         = 410670.96 µs
+--------------------------------------------------------------
+[RD6] All values logged successfully.
+=== RD Summary (rd_results.csv) ===
+tau_s:  n=1 | min=0.410671  mean=0.410671  max=0.410671
+Q:  n=1 | min=3.98711e+07  mean=3.98711e+07  max=3.98711e+07
+rmse:  n=1 | min=0.0846869  mean=0.0846869  max=0.0846869
+
+hz=125000000.0
+PS C:\Users\renrum\Desktop\PitayaQCM\RingDown\RingDown_Method_Files-main> cd ..
+root@rp-f0c2d4.local's password:
+ringdown_data.raw                                                                                                           100%  733KB   7.8MB/s   00:00     
+PS C:\Users\renrum\Desktop\PitayaQCM\RingDown>
+PS C:\Users\renrum\Desktop\PitayaQCM\RingDown> scp root@rp-f0c2d4.local:data.raw .
+root@rp-f0c2d4.local's password:
+data.raw                                                                                                                    100%  194MB  10.5MB/s   00:18     
+PS C:\Users\renrum\Desktop\PitayaQCM\RingDown> scp pthon .\plot.py
+The system cannot find the file specified.
+PS C:\Users\renrum\Desktop\PitayaQCM\RingDown> python .\plot.py
+Loaded data with shape: (101954752,)
+Removed DC offset.
+Applying initial high-pass filter (> 3 MHz)...
+High-pass filtering complete.
+PS C:\Users\renrum\Desktop\PitayaQCM\RingDown> cd .\RingDown_Method_Files-main\
+PS C:\Users\renrum\Desktop\PitayaQCM\RingDown\RingDown_Method_Files-main> scp root@rp-f0c2d4.local:data.raw .
+root@rp-f0c2d4.local's password:
+data.raw                                                                                                                    100%  194MB  10.3MB/s   00:18     
+PS C:\Users\renrum\Desktop\PitayaQCM\RingDown\RingDown_Method_Files-main> python '.\RD0+RD1_ Mode_knobs_load_slice.py' 
+[RD0] mode = OLD FILE MODE (Lucas metadata)
+[RD1/OLD] Found metadata JSON: ringdown_data.json
+[RD1/OLD][WARNING] JSON exists but does not contain OLD metadata keys.
+[RD1/OLD] Falling back to full raw file.
+[RD1/OLD] Loaded raw-only file 'data.raw' with 101954752 samples.
+[RD1/OLD] relax = 101954752 samples (~815.64 ms)
+[MAIN] RD0–RD1 complete
+[RD2-A] dc_offset = -7.712e+01
+WARNING (RD2): DC offset is large relative to signal amplitude.
+FIX: Check hardware bias or incorrect slicing indices in RD1.
+[RD2-B] peak amplitude = 1.001e+02 | normalized = True
+[RD2-C] saved rd_relax_zoom.png
+[DRIVER] RD2 done
+[RD3-A] env_abs computed | length=101954752
+[RD3-B] envelope smoothed | M=12 samples
+[RD3-C] saved rd_envelope.png
+[DRIVER] RD3 done
+[RD4-A] fit window: i0=75 i1=101613061 | t0=0.001 ms → t1=812.904 ms
+[RD4-B] τ = 19833886033.93 µs | Q_env = 311238403328.4
+C:\Users\renrum\Desktop\PitayaQCM\RingDown\RingDown_Method_Files-main\RD4_Fit_Decay.py:137: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  plt.tight_layout()
+C:\Users\renrum\Desktop\PitayaQCM\RingDown\RingDown_Method_Files-main\RD4_Fit_Decay.py:138: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  plt.savefig("rd_envelope_fit.png", dpi=150)
+[RD4-C] rmse=1.690e-02 | saved rd_envelope_fit.png
+[DRIVER] RD4 done | tau=19833886033.93 µs | Q_env=311238403328.4
+[RD5-A] crossings found: 8589800
+[RD5-B] first 3 crossings (s): [1.08280254e-08 1.06093804e-07 2.06522293e-07]
+WARNING (RD5): Zero-crossing intervals vary a lot.
+FIX: Check RD2 plot for noise or clipping. Verify f0 guess in RD3/RD4.
+[RD5-C] f0_relax = 5.265694 MHz | cycles used = 8589800
+[DRIVER] RD5 done | f0_relax=5.265694 MHz
+[RD7] alpha = 0.000
+[RD7] Δf_tau = 0.000 Hz   (from tau)
+[RD7] Δf_Q   = 0.000 Hz   (from Q)
+WARNING (RD7): df_tau extremely small (<0.1 Hz).
+FIX: Decay too slow or smoothing too strong — inspect RD3 & RD4.
+WARNING (RD7): Δf_tau and Δf_Q differ by more than 30%.
+FIX: Check Q from RD4 and f0 from RD5; noise or wrong envelope region.
+[RD7] saved rd_linewidth_compare.png
+[DRIVER] RD7 done | alpha=0.000
+--------------------------------------------------------------
+[RD6] Results saved → rd_results.csv
+[RD6] f0          = 5.265694 MHz
+[RD6] tau         = 19833886033.93 µs
+[RD6] Q           = 328105328674.3
+[RD6] RMSE        = 1.690e-02
+--------------------------------------------------------------
+[RD6] All values logged successfully.
+[DRIVER] RD6 done | results saved
+=== RD Summary (rd_results.csv) ===
+f0_hz:  n=2 | min=5.26569e+06  mean=1.80848e+07  max=3.0904e+07
+tau_s:  n=2 | min=0.410671  mean=9917.15  max=19833.9
+Q:  n=2 | min=3.98711e+07  mean=1.64073e+11  max=3.28105e+11
+rmse:  n=2 | min=0.0168966  mean=0.0507918  max=0.0846869
+
+Last 2 run(s):
+  - timestamp=2025-12-16T14:49:32 | f0_hz=30903978.384090506 | tau_s=0.41067095610483867 | Q=39871103.29055183 | fit_rmse=0.08468689308886782 | mode=NEW | fs_hz=125000000.0
+  - timestamp=2025-12-16T15:12:48 | f0_hz=5265693.755017338 | tau_s=19833.886033931165 | Q=328105328674.2537 | fit_rmse=0.016896628931270134 | mode=OLD | fs_hz=125000000.0
