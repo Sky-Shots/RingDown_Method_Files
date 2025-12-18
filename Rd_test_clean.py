@@ -51,12 +51,12 @@ import sys
 # ---------------------------------------------------------
 
 MODE             = "RINGDOWN"           # Label in metadata
-FREQ_HZ          = 5_000_000            # Excitation frequency (Hz)
-DURATION_S       = 0.040                # Total waveform length written to RAM
-AM_PK_V          = 0.15                 # Peak drive amplitude (Volts)
+FREQ_HZ          = 4.5e6                # Excitation frequency (Hz)
+DURATION_S       = 0.001                # Total waveform length written to RAM
+AM_PK_V          = 0.05                 # Peak drive amplitude (Volts)
 
 # Relay timing (microseconds – these go directly into FPGA registers)
-EXCITATION_TIME_US   = 500              # Relay closed (drive on)
+EXCITATION_TIME_US   = 300              # Relay closed (drive on)
 RELAXATION_TIME_US   = 3000             # Relay open (record decay)
 
 # Sampling / DAC settings
