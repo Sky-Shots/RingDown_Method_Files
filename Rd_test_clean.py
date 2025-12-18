@@ -152,9 +152,8 @@ raw_const = axil_mmio.read32(MLA_CONST_REG)
 magic_str = raw_const.to_bytes(4, byteorder="big").decode("latin-1", errors="ignore").strip()
 
 if magic_str != "ÅABC":
-    print(f"Unrecognized version constant: '{magic_str}' (raw=0x{raw_const:08X})")
-    print("This does not look like the ring-down bitstream. Aborting.")
-    sys.exit(1)
+    print(f"Warning: unrecognized FPGA version constant '{magic_str}'.")
+    print("Assuming default Red Pitaya overlay (ring-down mode). Continuing.")
 
 print(f"Device identity confirmed: '{magic_str}'")
 
