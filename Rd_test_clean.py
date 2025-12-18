@@ -228,7 +228,11 @@ if pad > 0:
     print(f"Waveform padded by {pad} bytesf or 64-sample alignment.")
 
 
-
+# ---------------------------------------------------------
+# Zero waveform buffer (used to force DAC OFF)
+# ---------------------------------------------------------
+zero_waveform = np.zeros(waveform_samples, dtype=np.int16)
+zero_bytes = zero_waveform.tobytes()
 
 # ---------------------------------------------------------
 # STEP 7 — Compute RAM layout and write waveform to DDR
@@ -345,9 +349,13 @@ print("Measurement started. FPGA running...")
 
 print("Waiting for ring-down to complete (time-based)...")
 
-total_time_s = (EXCITATION_TIME_US + RELAXATION_TIME_US) * 1e-6
-time.sleep(total_time_s + 0.01)  # small safety margin
+# Excitation Phase 
+time.sleep(EXCITATION_TIME_US * 1e-6)
 
+# HARD OFF: force DAC to ZERO
+ram_mmio.write(0, zero_waveform.tobytes())
+# Relaxtation Phase
+time.sleep(RELAXATION_TIME_US * 1e-6)
 print("Assuming ring-down capture complete.")
 
 
