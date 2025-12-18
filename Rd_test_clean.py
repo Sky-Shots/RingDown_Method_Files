@@ -343,17 +343,13 @@ print("Measurement started. FPGA running...")
 # STEP 9 — Wait for FPGA to finish excitation + capture
 # ---------------------------------------------------------
 
-print("Waiting for FPGA to complete ring-down sequence...")
+print("Waiting for ring-down to complete (time-based)...")
 
-try:
-    write_ptr, read_ptr = wait_done(axil_mmio)
-    print("\nFPGA reports: WRITER_DONE=1, READER_DONE=1")
-    print(f"Final writer pointer : {write_ptr}")
-    print(f"Final reader pointer : {read_ptr}")
-except TimeoutError as e:
-    print("\nERROR: Timeout while waiting for FPGA to finish.")
-    print(e)
-    sys.exit(1)
+total_time_s = (EXCITATION_TIME_US + RELAXATION_TIME_US) * 1e-6
+time.sleep(total_time_s + 0.01)  # small safety margin
+
+print("Assuming ring-down capture complete.")
+
 
 # ---------------------------------------------------------
 # STEP 10 — Read captured ring-down from DDR → .raw file
