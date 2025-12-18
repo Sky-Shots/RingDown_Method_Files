@@ -184,49 +184,30 @@ print("Device reset complete. Hardware is in a known idle state.")
 # ---------------------------------------------------------
 
 print("Generating excitation waveform...")
+print("Generating excitation waveform...")
 
-# Number of samples for the stored excite buffer
 N = int(DURATION_S * SAMPLE_RATE)
-
-# Maximum DAC code for given number of bits:
 dac_max = (2**(DAC_BITS - 1) - 1)
 
-chunk_samples = 65536
-written_samples = 0
+waveform = np.sin(2 * np.pi * FREQ_HZ * np.arange(N) / SAMPLE_RATE)
+waveform = (waveform * AM_PK_V / FULL_SCALE_V * dac_max).astype(np.int16)
 
-for start in range(0, N, chunk_samples):
-    count = min(chunk_samples, N - written_samples)
+ram_mmio.write(0, waveform.tobytes())
 
-    # Time vector for generating the sine
-    t = ( start + np.arange(N) / SAMPLE_RATE)
-    # The sine equation: A * sin(2π f t)
-    # This excites the crystal near its mechanical resonance
-    chunk = np.sin(2 * np.pi * FREQ_HZ * t)
+waveform_samples = len(waveform)
+waveform_bytes = waveform_samples * SAMPLE_SIZE
 
-    # scale directly to DAC codes
-    chunk = (chunk * AM_PK_V / FULL_SCALE_V * dac_max). astype(np.int16)
+print(f"Excitation waveform generated: {waveform_samples} samples")
 
-    ram_mmio.write(start * SAMPLE_SIZE, chunk.tobytes())
-
-    written_samples += count
-
-del t
-del chunk
-print(f"Excitation waveform generated: {written_samples}samples")
 
 
 
 # ---------------------------------------------------------
 # Pad to 64-sample boundary for DMA alignment
 # ---------------------------------------------------------
-waveform_samples = written_samples
-waveform_bytes = waveform_samples * SAMPLE_SIZE
-
-pad = (- waveform_bytes) % 64
+pad = (-waveform_bytes) % 64
 if pad > 0:
     waveform_bytes += pad
-    print(f"Waveform padded by {pad} bytesf or 64-sample alignment.")
-
 
 # ---------------------------------------------------------
 # Zero waveform buffer (used to force DAC OFF)
@@ -343,17 +324,11 @@ input("Press ENTER to start measurement...")
 axil_mmio.write32(SOFT_RESET_REG, 0)
 print("Measurement started. FPGA running...")
 
-# ---------------------------------------------------------
-# STEP 9 — Wait for FPGA to finish excitation + capture
-# ---------------------------------------------------------
-
-print("Waiting for ring-down to complete (time-based)...")
-
 # Excitation Phase 
 time.sleep(EXCITATION_TIME_US * 1e-6)
 
 # HARD OFF: force DAC to ZERO
-ram_mmio.write(0, zero_waveform.tobytes())
+ram_mmio.write(0, zero_bytes)
 # Relaxtation Phase
 time.sleep(RELAXATION_TIME_US * 1e-6)
 print("Assuming ring-down capture complete.")
@@ -404,7 +379,7 @@ metadata = {
     "sample_rate_hz": SAMPLE_RATE,
 
     # Waveform info
-    "waveform_samples": len(waveform),
+    "waveform_samples": waveform_samples,
     "waveform_bytes": waveform_bytes,
     "waveform_bursts": waveform_bursts,
 
